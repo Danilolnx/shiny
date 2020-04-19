@@ -1,0 +1,98 @@
+#!/bin/sh
+#
+### BEGIN INIT INFO
+# Provides:          shiny-server
+# Required-Start:    $local_fs $remote_fs $syslog $network $named
+# Required-Stop:     $local_fs $remote_fs $syslog $network $named
+# Default-Start:     3 5
+# Default-Stop:      0 1 2 6
+# Short-Description: shiny-server deploys R shiny applications
+# Description:       shiny-server deploys R shiny applications
+### END INIT INFO
+
+prog=shiny-server
+logfile="/var/log/${prog}.log"
+lockfile="/var/run/${prog}.pid"
+
+execute=$(which $prog)
+
+# Exit if the package is not installed
+if [ ! -x "$execute" ] ; then
+   echo -n $"$prog wasn't found or isn't executable."
+   exit 1
+fi
+
+# Source LSB init functions
+. /etc/rc.status
+
+# Reset status of this service
+rc_reset
+
+case "$1" in
+    start)
+	echo -n "Starting shiny-server "
+
+	if [ -e $lockfile ] && [ -e /proc/`cat /var/run/shiny-server.pid` ]; then
+      echo -n "cannot start shiny-server: already running."
+      rc_failed 3
+  else 
+  	$execute --daemon "--pidfile=$lockfile" >> $logfile 2>&1 &
+	  retval=$?
+	  [ $retval -eq 0 ] && echo -n || rc_failed 1
+  fi
+
+	# Remember status and be verbose
+	rc_status -v
+	;;
+    stop)
+	echo -n $"Stopping shiny-server: "
+  if [ ! -e $lockfile ] || [ ! -e /proc/`cat /var/run/shiny-server.pid` ]; then
+      echo -n "cannot stop shiny-server: not running."
+      rc_failed 1
+  else
+  	kill `cat "$lockfile"`
+	  retval=$?
+	  [ $retval -eq 0 ] && echo -n  || rc_failed 1
+  fi
+  
+	# Remember status and be verbose
+	rc_status -v
+	;;
+    restart)
+	## Stop the service and regardless of whether it was
+	## running or not, start it again.
+	$0 stop
+	sleep 1
+	$0 start
+
+	# Remember status and be quiet
+	rc_status
+	;;
+    reload)
+	echo -n $"Reloading shiny-server: "
+  if [ ! -e $lockfile ] || [ ! -e /proc/`cat /var/run/shiny-server.pid` ]; then
+      echo -n $"cannot reload shiny-server: not running.";
+      rc_failed 1
+  else 
+  	kill -1 `cat "$lockfile"`
+		retval=$?
+		[ $retval -eq 0 ] && echo -n || rc_failed 1
+  fi
+  
+	rc_status -v
+	;;
+    status)
+	echo -n "Checking for service shiny-server"
+
+	if [ ! -e $lockfile ] || [ ! -e /proc/`cat /var/run/shiny-server.pid` ]; then
+    rc_failed 2
+  fi
+
+	# Remember status and be verbose
+	rc_status -v
+	;;
+esac
+rc_exit
+
+
+

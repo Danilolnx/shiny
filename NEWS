@@ -1,0 +1,304 @@
+shiny-server 1.5.13
+--------------------------------------------------------------------------------
+
+* Upgrade Node.js to 12.15.0.
+
+* Upgrade dependencies to latest versions.
+
+* The `disable_protocols` directive now has `streaming` and `polling` options
+  for easily disabling families of protocols.
+
+* Now able to redirect R logs to the main shiny-server process's stderr, which
+  is useful for containerized deployments and other scenarios where log files on
+  disk are inconvenient to access. Enable this functionality by setting the
+  environment variable `SHINY_LOG_STDERR` to a non-empty value.
+
+shiny-server 1.5.12
+--------------------------------------------------------------------------------
+
+* Upgrade Node.js to 10.15.3.
+
+shiny-server 1.5.11
+--------------------------------------------------------------------------------
+
+(No open-source release)
+
+shiny-server 1.5.10
+--------------------------------------------------------------------------------
+
+(No open-source release)
+
+shiny-server 1.5.9
+--------------------------------------------------------------------------------
+
+* Fix bug with listening on port 80.
+
+shiny-server 1.5.8
+--------------------------------------------------------------------------------
+
+* Upgrade to Node v8.11.3.
+
+* Added support for listening on IPv6 addresses.
+
+* X-Powered-By response header now reports "Shiny Server" instead of "Express".
+
+* Resolve permissions issues when log directory is on an NFS mount with root
+  squash. The `log_as_user` directive was intended to work for these situations,
+  but would fail in common configurations. It should now work.
+
+* `log_file_mode` no longer respects the process umask, and the default has been
+  changed from `0660` to `0640`.
+
+* Exit code of shiny-server process was always 0, regardless of the reason the
+  process exited. Now a non-zero exit code is used if the process was terminated
+  by a signal, or an unhandled error crashed the process, or loading of the
+  shiny-server.conf config file failed during startup.
+
+shiny-server 1.5.7
+--------------------------------------------------------------------------------
+
+* Upgrade to Node v8.10.0.
+
+* Dropped support for Ubuntu 12.04 and SLES 11.
+
+* Support gzip/deflate compression for HTTP responses. You can disable this if
+  necessary with the directive "http_allow_compression no;" at the top level
+  of shiny-server.conf.
+
+* Don't color log output if stdout is not a terminal.
+
+shiny-server 1.5.6
+--------------------------------------------------------------------------------
+
+* Dropped support for RedHat/CentOS 5.
+
+* Use HTTPS for Google Fonts on error page, which resolves insecure content errors on some browser when run behind SSL.
+  (PR #322)
+
+shiny-server 1.5.5
+--------------------------------------------------------------------------------
+
+There were no changes in this release. The version was increased just to match Shiny Server Pro.
+
+shiny-server 1.5.4
+--------------------------------------------------------------------------------
+
+* Upgrade to Node.js v6.10.3.
+
+* Upgrade to pandoc 1.19.2.1.
+
+* Refactor scheduler code to make enforcement of connection limits more robust.
+
+* Add opt-in clickjacking protection via `frame_options` directive.
+
+* Fix "Error: Can't set headers after they are sent." appearing in the log.
+
+shiny-server 1.5.3
+--------------------------------------------------------------------------------
+
+* Upgrade to Node.js v6.10.0.
+
+shiny-server 1.5.2
+--------------------------------------------------------------------------------
+
+* Add additional configuration directives `http_keepalive_timeout`,
+  `sockjs_heartbeat_delay`, and `sockjs_disconnect_delay` to allow working
+  with very slow connections and large SockJS payloads. (The default values
+  for these options are the same as in previous versions of Shiny Server.)
+
+shiny-server 1.5.1
+--------------------------------------------------------------------------------
+
+* Improve robustness with unfriendly proxy configurations. This had regressed
+  some time between 1.4.3 and 1.4.7. (PR #263)
+
+shiny-server 1.5.0
+--------------------------------------------------------------------------------
+
+* Upgrade to Node.js v6.6.0, and upgrade all npm dependencies. While no distinct
+  features or significant bug fixes result from this upgrade, catching up to the
+  current Node.js release is critical for the long-term health of our codebase.
+
+* Fix bug where R processes would not be cleaned up if an HTTP request was
+  prematurely closed.
+
+shiny-server 1.4.7
+--------------------------------------------------------------------------------
+
+* Upgrade to Node.js v0.10.47 (security patches).
+
+* Fix a minor bug where subapps being created after a disrupted-then-restored
+  SockJS connection, might result in a duplicate connection.
+
+* The bookmarkable state feature in Shiny v0.14 is now officially supported.
+  Use the `bookmark_state_dir` directive to store bookmarked sessions in a
+  specific location (default is /var/lib/shiny-server/bookmarks).
+
+shiny-server 1.4.6
+--------------------------------------------------------------------------------
+(Skipped 1.4.5 for parity with Shiny Server Pro; 1.4.5 was a security release
+that was Shiny Server Pro specific.)
+
+* Fix a bug where a 404 response on some URLs could cause the server to exit
+  with an unhandled exception.
+
+shiny-server 1.4.4
+--------------------------------------------------------------------------------
+
+* Upgrade to Node.js v0.10.46 (security patches).
+
+shiny-server 1.4.3
+--------------------------------------------------------------------------------
+* Add auto-reconnect capabilities. Can be disabled via `reconnect false;`
+  config option (replaces `disable_reconnect true;`).
+
+* Upgrade to Node.js v0.10.45 (primarily for updated OpenSSL).
+
+shiny-server 1.4.2
+--------------------------------------------------------------------------------
+* Improve disconnected UI by adding modal with description.
+
+* Added experimental support for reconnecting disconnected sessions. Set 
+  `disable_reconnect false;` to enable the feature.
+
+shiny-server 1.4.0
+--------------------------------------------------------------------------------
+* Added support for Red Hat Enterprise Linux 7 and Ubuntu 15.04.
+
+* Added `disabled_protocols` to allow administrators to disable arbitrary 
+  SockJS protocols.
+
+* Capture Upstart failures to start Shiny Server successfully.
+
+* Various bug fixes around RHEL/CentOS 7 installers.
+
+* Bug fix: Load fonts over HTTPS.
+
+* Bug fix: Fix installer locale issue for Ubuntu 14.04.
+
+* Bug fix: RH6 uses a statically linked Pandoc.
+
+* Support app_idle_timeout of 0.
+
+shiny-server 1.3.0
+--------------------------------------------------------------------------------
+* Added support for SUSE Linux Enterprise Server 11.
+
+shiny-server 1.2.1
+--------------------------------------------------------------------------------
+* Added support for single-file `app.R` deployment released in Shiny 0.10.2.
+
+shiny-server 1.2.0
+--------------------------------------------------------------------------------
+
+* Added experimental support for Interactive Documents (Shiny + Rmd) via the 
+  rmarkdown package.
+* Leverage site_dir when hosting in user_dirs mode; user_dirs will now respect 
+  the directory_index setting and host static assets other than Shiny 
+  applications.
+* Provide a more sane handling of LANG by ensuring it's passed through in all 
+  spawning modes and set an environment variable in the startup script on 
+  Ubuntu.
+* Bug fix: Restored functionality of sspasswd's `-v` switch.
+
+shiny-server 1.1.0
+--------------------------------------------------------------------------------
+
+* Added support for custom page templates -- exposing the ability to customize
+  the static pages generated by Shiny Server for directory listings or errors.
+
+* Created 'user_dirs' mode and the special ':HOME_USER:' run_as user to replace
+  'user_apps'.
+
+* Leverage bash when spawning Shiny processes on behalf of other users, as in 
+  'user_dirs' mode.
+
+* Bug fix: Make compatible with loading content from Shiny Server in an iframe 
+  with third-party cookies blocked.
+
+* Bug fix: Restored compatibility with IE8 Standards Mode 
+
+shiny-server 1.0.0
+--------------------------------------------------------------------------------
+
+* Additional reliability testing.
+
+shiny-server 0.5.0
+--------------------------------------------------------------------------------
+
+* Added various quick-start configurations as described at: 
+  http://rstudio.github.io/shiny-server/latest/#quick-start
+
+shiny-server 0.4.2
+--------------------------------------------------------------------------------
+
+* BREAKING CHANGE: Deprecatedd `application` setting in favor of nested 
+  ``location` blocks.
+
+* Allow client to configure which network techniques should be used to connect
+  to the server using the keyboard shortcut 'ctrl+shift+A'.
+
+* Properly set working directory of spawned Shiny Processes to the associated
+  application's directory to honor local .Renviron and family.
+
+* Provide a logrotate configuration for /var/log/shiny-server.log where 
+  logrotate is available.
+
+* Various memory leak and stability improvements.
+
+shiny-server 0.4.0
+--------------------------------------------------------------------------------
+
+* Use UNIX domain sockets for data transfer instead of TCP/IP for enhanced 
+  security.
+
+* Added scheduler and traffic direction which require shiny >= 0.6.0.99 to be
+  compatible.
+
+shiny-server 0.3.6
+--------------------------------------------------------------------------------
+
+* Support for node-webkit-agent (https://github.com/c4milo/node-webkit-agent).
+  Use by setting DEBUG_PORT environment variable to a port number, then follow
+  the instructions on the node-webkit-agent GitHub page under "Connecting to the
+  agent". (At the time of this writing, node-webkit-agent only supports Node
+  v0.8.x, not v0.10.x.)
+
+* Fix slow memory leak when checking for restart.txt that doesn't exist.
+
+shiny-server 0.3.5
+--------------------------------------------------------------------------------
+
+* Fix crash on Node 0.10.x when serving static files.
+
+* Fix slow memory leak and log file descriptor leak.
+
+shiny-server 0.3.4
+--------------------------------------------------------------------------------
+
+* You can now force an app to restart by calling "touch restart.txt" in the app
+  directory root. Existing sessions will not be terminated, but the next session
+  to be initiated will cause a new R process to be launched.
+
+* shiny-server now passes its version number to R processes it launches.
+
+shiny-server 0.3.3
+--------------------------------------------------------------------------------
+
+* Remove pausing which is causing corruption in proxied HTTP request bodies.
+
+shiny-server 0.3.2
+--------------------------------------------------------------------------------
+
+* Make shiny-server compatible with httpuv package which we are introducing to
+  Shiny.
+
+shiny-server 0.3.1
+--------------------------------------------------------------------------------
+
+* Fix crashing bug when "req" object has no address.
+
+shiny-server 0.3.0
+--------------------------------------------------------------------------------
+
+* Initial release.

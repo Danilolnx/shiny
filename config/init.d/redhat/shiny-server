@@ -1,0 +1,100 @@
+#!/bin/sh
+#
+# chkconfig:   2345 80 20 
+# description: shiny-server deploys R shiny applications
+# processname: shiny-server
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+prog=shiny-server
+execute=$(which $prog)
+logfile="/var/log/${prog}.log"
+lockfile="/var/run/${prog}.pid"
+
+# Exit if the package is not installed
+if [ ! -x $execute ] ; then 
+   echo -n $"$prog wasn't found or isn't executable."
+   exit 1
+fi
+
+start() {
+    touch $logfile
+    echo -n $"Starting shiny-server: "
+    if [ -e $lockfile ] && [ -e /proc/`cat /var/run/shiny-server.pid` ]; then
+        echo -n $"already running.";
+        failure $"cannot start shiny-server: already running.";
+        echo
+        return 1
+    fi
+    $prog --daemon "--pidfile=$lockfile" >> $logfile 2>&1 &
+    retval=$?
+    [ $retval -eq 0 ] && success || failure
+    echo
+    return $retval
+}
+
+stop() {
+    echo -n $"Stopping shiny-server: "
+    if [ ! -e $lockfile ] || [ ! -e /proc/`cat /var/run/shiny-server.pid` ]; then
+        echo -n $"not running.";
+        failure $"cannot stop shiny-server: not running.";
+        echo
+        return 1
+    fi
+    kill `cat "$lockfile"`
+    retval=$?
+    [ $retval -eq 0 ] && success || failure
+    echo
+    return $retval
+}
+
+restart() {
+    stop
+    sleep 1
+    start
+}
+
+reload() {
+    echo -n $"Reloading shiny-server: "
+    if [ ! -e $lockfile ] || [ ! -e /proc/`cat /var/run/shiny-server.pid` ]; then
+        echo -n $"not running.";
+        failure $"cannot reload shiny-server: not running.";
+        echo
+        return 1
+    fi
+    kill -1 `cat "$lockfile"`
+    retval=$?
+    [ $retval -eq 0 ] && success || failure
+    echo
+    return $retval 
+}
+
+rh_status() {
+    status $prog
+}
+
+rh_status_q() {
+    rh_status >/dev/null 2>&1
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart)
+        $1
+        ;;
+    reload)
+        $1
+        ;;
+    status)
+        rh_status
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|status|restart}"
+        exit 2
+esac

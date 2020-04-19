@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# errors shouldn't cause script to exit
+set +e
+
+rm -f /usr/bin/shiny-server
+# systemd
+rm -f /etc/systemd/system/shiny-server.service
+# upstart
+rm -f /etc/init/shiny-server.conf
+# sysv init
+rm -f /etc/init.d/shiny-server
+
+# remove temporary sockets
+rm -rf /var/shiny-server/sockets
+
+# clear error termination state
+set -e

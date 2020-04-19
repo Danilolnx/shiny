@@ -1,0 +1,48 @@
+    <p>Listed below are all the directives that are supported in Shiny Server config files.</p>
+    <p><strong>Applies to</strong> indicates the kind of parent scope that this directive normally appears inside.</p>
+    <p><strong>Inheritable</strong> means that you can put this directive at a higher level in the hierarchy and it will be inherited by any children to which it might apply. Inherited directives can be overridden by using the directive again in a child scope.</p>
+    <ul class="directives">
+      {{#each directives}}
+        <li>
+          <h3 class="code"><a name="{{name}}"></a>{{name}}</h3>
+          <p class="desc">{{{desc}}}</p>
+          {{#if params}}
+            <table class="params">
+              <colgroup>
+                <col style="width: 105px"></col>
+                <col style="width: 90px"></col>
+                <col style="width: 90px"></col>
+                <col></col>
+                <col style="width: 90px"></col>
+              </colgroup>
+              <tr>
+                <th>Parameter</th>
+                <th>Data type</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Default</th>
+              </tr>
+              {{#each params}}
+                <tr>
+                  <td>{{name}}</td>
+                  <td>{{type}}</td>
+                  <td>{{#if optional}}optional{{else}}{{#if vararg}}multiple{{else}}required{{/if}}{{/if}}</td>
+                  <td>{{{desc}}}</td>
+                  <td>{{defaultValue}}</td>
+                </tr>
+              {{/each}}
+            </table>
+          {{else}}
+            <p class="noparams">This directive has no parameters.</p>
+          {{/if}}
+
+          <p>
+            <label>Applies to:</label> {{{scopelist at}}}<br/>
+            <label>Inheritable:</label> {{YesNo otherLocs}}<br/>
+            {{#if children}}
+              <label>Child directives:</label> {{{scopelist children}}}<br/>
+            {{/if}}
+          </p>
+        </li>
+      {{/each}}
+    </ul>

@@ -1,0 +1,11 @@
+build/
+npm-debug.log
+*.swp
+.DS_Store
+bin/shiny-server
+external/node/ex-node1234/
+external/node/node-*
+ext/
+src/launcher.h
+.vagrant
+node_modules/
